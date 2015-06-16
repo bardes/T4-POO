@@ -1,0 +1,51 @@
+<project name="T3" basedir="." default="jar">
+    <property name="main-class"  value="br.usp.bbt.ui.BibliotecaInterface"/>
+    <property name="author.name" value="Paulo Bardes et al."/>
+
+    <property name="src.dir"     value="src"/>
+    <property name="res.dir"     value="res"/>
+    <property name="lib.dir"     value="lib"/>
+    <property name="build.dir"   value="bin"/>
+
+    <property name="classes.dir" value="${build.dir}/classes"/>
+    <property name="jar.dir"     value="${build.dir}/jar"/>
+    <property name="one-jar.taskdef" value="one-jar-ant-task-0.97.jar"/>
+    <fileset id="libs" dir="${lib.dir}" includes="**/*.jar"
+            excludes="${one-jar.taskdef}"/>
+
+    <taskdef name="one-jar" classname="com.simontuffs.onejar.ant.OneJarTask" 
+            classpath="${lib.dir}/${one-jar.taskdef}" onerror="report"/>
+
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+    </target>
+
+    <target name="compile">
+        <mkdir dir="${classes.dir}"/>
+        <javac includeantruntime="false" srcdir="${src.dir}"
+                destdir="${classes.dir}" debug="on">
+            <classpath> 
+                <fileset refid="libs"/>
+            </classpath>
+            <compilerarg value="-Xlint:all"/>
+        </javac>
+    </target>
+
+    <target name="jar" depends="compile">
+        <mkdir dir="${jar.dir}"/>
+        <one-jar destfile="${jar.dir}/${ant.project.name}.jar">
+            <manifest>
+                <attribute name="One-Jar-Main-Class" value="${main-class}"/>
+                <attribute name="Author" value="${author.name}"/>
+            </manifest>
+            <lib>
+                <fileset refid="libs"/>
+            </lib>
+            <main>
+                <fileset dir="." includes="${res.dir}/**"/>
+                <fileset dir="${classes.dir}"/>
+                <fileset dir="${src.dir}" includes="**/*.java"/>
+            </main>
+        </one-jar>
+    </target>
+</project>
