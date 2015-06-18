@@ -12,38 +12,50 @@ O protocolo usado para se comunicar com o servidor é parecido com HTTP, porém 
 <\n>
 ```
 `<COMANDO>` e `<VARIÁVEL>`: São identificadores, e devem ser compostos apenas de letras (maiúsculas ou minúsculas).
-`{CONTEÚDO}`: Pode ser qualquer sequencia de caractere ASCII válidos, exeto caracteres de controle. *Note que espaços após os ':' são interpretados como parte da variável!*.
+
+
+`{CONTEÚDO}`: Pode ser qualquer sequencia de caractere ASCII válidos, exeto caracteres de controle. **Nota:** Espaços após os ':' são interpretados como parte da variável!.
+
 `<\n>`: Representa uma quebra de linha.
 A parte entre colchetes pode ser repetida 0 ou mais vezes.
 
-A respostas do servidor segue o mesmo modelo da requisição, porém além do cabeçalho (delimitado pelas duas quebras de linhas seguidas) a resposta pode conter mais informações à variar de acordo com o comando que gerou a resposta.
+As respostas do servidor seguem o mesmo modelo das requisições, porém além do cabeçalho (delimitado pelas duas quebras de linhas seguidas) as respostas podem conter mais informações de acordo com o comando que gerou a resposta.
 
-### Exemplos:
-Cliente envia:
+### Comandos válidos:
+#### LOGIN
+**Requisição:**
 ```
 LOGIN
 user:nome_de_exemplo
 pass:s3nh4_s3cr374
 
 ```
-Resposta:
+**Respostas:**
 ```
 OK
-token:uPezJ4+KOqDuTjydvmRzhw==
+token:ExEmPlOeXeMpLoExEmPlO+==
 
 ```
-Ou:
+Quando o login é efetuado com sucesso o token identifica a sessão do usuário. Todas as ações que requerem login precisam de um token válido para serem efetuadas.
+
 ```
 ERRO
 
 Usuário e/ou senha inválidos.
 ```
-### Comandos válidos:
-#### LOGIN
+Quando o login falha.
+
+### LOGOUT
+**Requisição:**
 ```
-LOGIN
-user:nome_de_exemplo
-pass:s3nh4_s3cr374
+LOGOUT
+token:ExEmPlOeXeMpLoExEmPlO+==
 
 ```
 
+**Resposta:**
+```
+OK
+
+```
+A resposta de um LOGOUT é sempre OK, mesmo que o token não exista ou já tenha feito logout.
