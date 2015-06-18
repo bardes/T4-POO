@@ -1,5 +1,5 @@
 <project name="T3" basedir="." default="jar">
-    <property name="main-class"  value="br.usp.bbt.ui.BibliotecaInterface"/>
+    <property name="main-class"  value="br.usp.icmc.mercado.Server"/>
     <property name="author.name" value="Paulo Bardes et al."/>
 
     <property name="src.dir"     value="src"/>
