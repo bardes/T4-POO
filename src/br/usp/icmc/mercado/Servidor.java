@@ -1,4 +1,6 @@
 package br.usp.icmc.mercado;
+import java.io.*;
+import java.util.*;
 
 /**
  * Classe responsável por receber as conexões e lidar com o banco de dados.
@@ -11,4 +13,12 @@ package br.usp.icmc.mercado;
 
 public class Servidor
 {
+    public static void main(String[] args) throws Exception {
+        Mensagem m = Mensagem.le(new BufferedReader(new FileReader(args[0])));
+        System.out.println(m == null ? "Falhou!" : m);
+
+        for(Map.Entry<String, String> e : m.variaveis.entrySet()) {
+            System.out.println(">>> " + e.getKey() + "=" + e.getValue());
+        }
+    }
 }
