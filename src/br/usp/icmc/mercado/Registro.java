@@ -38,23 +38,26 @@ public interface Registro
      * Escreve uma sequencia de registros num arquivo.
      */
     static void
-    escreveRegistros(File arquivo, Iterable<? extends Registro> regs)
+    escreveRegistros(File arquivo, Iterable<Registro> regs)
     throws FileNotFoundException, IOException
     {
         // Abre o arquivo e cria um "printer" para manipular a saída
         CSVPrinter saida = new CSVPrinter(new FileWriter(arquivo),
                                           CSVFormat.RFC4180);
-        //TODO: Adicionar tipo do obj. no registro.
+
         // Escreve cada registro no arquivo
-        for(Registro r : regs)
-            saida.printRecord(r.pegaDados());
+        for(Registro r : regs) {
+            saida.print(r.getClass().getName()); // Escreve o tipo do obj.
+            saida.printRecord(r.pegaDados());    // Seguido pelos dados
+        }
 
         saida.close();
     }
 
-/*
-    private void carregaRegistros(File arquivo, Set<Registro> regs,
-            Class<? extends Registro> tipo)
+
+    static void carregaRegistros
+    (File arquivo, LinkedHashMap<String, Registro> regs)
+    throws FileNotFoundException, IOException
     {
         // Cria um parser para ler o arquivo .csv
         CSVParser parser = CSVFormat.RFC4180.parse(new FileReader(arquivo));
@@ -65,10 +68,32 @@ public interface Registro
         // Percorre cada registro no arquivo
         for(CSVRecord r : parser)
         {
-            Registro novo = tipo.newInstance();
-            novo.carregaDados(empilhaCSVRecord(r));
-            regs.add(novo);
+            // Tenta instanciar um ojeto do tipo lido no arquivo.
+            Object novoObj; 
+            try {
+                novoObj = Class.forName(r.get(0)).newInstance();
+            } catch (Exception e) {
+                System.err.println("Aviso: Ignorando registro inválido.");
+                e.printStackTrace();
+                continue;
+            }
+
+            if(novoObj instanceof Registro) {
+                Registro novo = (Registro) novoObj;
+                novo.carregaDados(empilhaCSVRecord(r));
+                regs.put(r.get(1), novo);
+            } else {
+                System.err.println("Aviso: Registro ignorado! " + novoObj + 
+                        " não implementa a interface Registro.");
+            }
         }
     }
-*/
+
+    static Stack<String> empilhaCSVRecord(CSVRecord r)
+    {
+        Stack<String> empilhado = new Stack<String>();
+        for(String dado : r)
+            empilhado.add(dado);
+        return empilhado;
+    }
 }
