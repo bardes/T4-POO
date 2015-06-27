@@ -145,9 +145,11 @@ add:9001
 
 Quando estoca com sucesso:
 ```
-OK
+STOCK
+count:<Novo total>
 
 ```
+`count` indica a quantiade total de produtos após a estocagem.
 
 Quando o produto não existe:
 ```
@@ -177,6 +179,7 @@ count:<Número de produtos>
 <Prod 2>
 ...
 ```
+Os produtos são representados no mesmo formato do arquivo CSV.
 
 ### Comprar Produto
 Realiza a compra de um produto.
