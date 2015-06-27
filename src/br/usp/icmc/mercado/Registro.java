@@ -35,15 +35,14 @@ public interface Registro
     void carregaDados(Stack<String> dados);
 
     /**
-     * Escreve uma sequencia de registros num arquivo.
+     * Escreve uma sequencia de registros em formato CSV.
      */
     static void
-    escreveRegistros(File arquivo, Iterable<Registro> regs)
+    escreveRegistros(Appendable dest, Iterable<Registro> regs)
     throws FileNotFoundException, IOException
     {
         // Abre o arquivo e cria um "printer" para manipular a saída
-        CSVPrinter saida = new CSVPrinter(new FileWriter(arquivo),
-                                          CSVFormat.RFC4180);
+        CSVPrinter saida = new CSVPrinter(dest, CSVFormat.RFC4180);
 
         // Escreve cada registro no arquivo
         for(Registro r : regs) {
@@ -55,12 +54,12 @@ public interface Registro
     }
 
 
-    static void carregaRegistros
-    (File arquivo, LinkedHashMap<String, Registro> regs)
+    static void
+    carregaRegistros (Reader fonte, LinkedHashMap<String, Registro> regs)
     throws FileNotFoundException, IOException
     {
         // Cria um parser para ler o arquivo .csv
-        CSVParser parser = CSVFormat.RFC4180.parse(new FileReader(arquivo));
+        CSVParser parser = CSVFormat.RFC4180.parse(fonte);
 
         // Esvazia os registros atuais
         regs.clear();
