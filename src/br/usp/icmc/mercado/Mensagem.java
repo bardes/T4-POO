@@ -16,13 +16,15 @@ public class Mensagem
         variaveis = new HashMap<String, String>();
     }
 
-    private static void esvazia(BufferedReader entrada) throws IOException {
+    private static void esvazia(BufferedReader entrada) throws IOException
+    {
         String s;
         while((s = entrada.readLine()) != null)
             if(s.equals("")) return;
     }
 
-    public static Mensagem le(BufferedReader entrada) throws IOException {
+    public static Mensagem le(BufferedReader entrada) throws IOException
+    {
         Mensagem msg = new Mensagem();
 
         do { // Ignora quebras de linha iniciais
@@ -59,8 +61,17 @@ public class Mensagem
         return msg;
     }
 
+    public void escreve(Writer saida)
+    {
+        saida.write(comando + "\n");
+        for(Map.Entry<String, String> e : variaveis.entrySet())
+            saida.write(e.getKey() + ":" + e.getValue() + "\n");
+        saida.write("\n");
+    }
+
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "<Mensagem: " + comando + " +" + variaveis.size() + " vars>";
     }
 }
