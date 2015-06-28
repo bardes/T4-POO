@@ -1,4 +1,6 @@
 package br.usp.icmc.mercado;
+
+import java.io.*;
 import java.net.*;
 
 /**
@@ -10,7 +12,36 @@ import java.net.*;
  */
 class Manipulador extends Thread
 {
+    Socket con;
+
     public Manipulador(Socket s)
     {
+        super();
+        con = s;
+    }
+
+    @Override
+    public void interrupt()
+    {
+        synchronized(con) {
+            // TODO enviar msg de desconn.
+            try {
+                con.close();
+                System.err.println("AVISO: fechamento forçado da conexão " +
+                                    con);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        super.interrupt();
+    }
+
+    @Override
+    public void run()
+    {
+        // TODO synchronized para garantir que não vai fechar no meio de uma resposta
+        Servidor s = Servidor.pegaServidor();
+        
     }
 }

@@ -20,8 +20,6 @@ public class Servidor
 
     private Map<String, String> usuarios;
     private Map<String, String> produtos;
-    
-    private String estado;
     private ServerSocket ss;
 
     private Servidor()
@@ -34,11 +32,6 @@ public class Servidor
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public String pegaEstado()
-    {
-        return estado;
     }
 
     /**
@@ -57,30 +50,28 @@ public class Servidor
 
     public void roda(int porta) throws InterruptedException
     {
+        // Cria um executor pra cuidar dos manipuladores
+        ExecutorService executor = Executors.newCachedThreadPool();
 
-        // Cria um manipulador de threads.
-        ExecutorService executor = Executors.newFixedThreadPool(
-                Runtime.getRuntime().availableProcessors());
-
-        estado = "RODANDO";
-        while(estado.equals("RODANDO")) {
+        while(true) {
             // Espera uma conexão ou sai se o socket fechar
             Socket s = null;
             try {
                 s = ss.accept();
             } catch (IOException e) {
-                e.printStackTrace();
+                if(!ss.isClosed())
+                    e.printStackTrace();
                 break;
-            } catch (Exception e) {
-                e.printStackTrace();
-                continue;
             }
 
             // Passa o Soket para uma thread lidar com a conexão
             executor.execute(new Manipulador(s));
         }
 
-        // Espera 30s antes de fechar pra dar tempo de terminar todas as
+        // Interrompe todas as threads
+        executor.shutdownNow();
+
+        // Espera até 30s antes de fechar pra dar tempo de terminar todas as
         // requisições em aberto.
         if(!executor.awaitTermination(30, TimeUnit.SECONDS)) {
             System.err.println("AVISO: Não conseguiu fechar todas as "
@@ -93,10 +84,6 @@ public class Servidor
      */
     public void para()
     {
-        if(!estado.equals("RODANDO"))
-            return;
-
-        estado = "PARA";
         try {
             ss.close();
         } catch (IOException e) {
@@ -185,9 +172,7 @@ public class Servidor
             System.exit(1);
         }
 
-        // Tenta criar o ServerSocket
-        int porta;
-        ServerSocket ss = null;
+        // Tenta rodar o Server
         try {
             Servidor.pegaServidor().roda(Integer.parseInt(args[0]));
         } catch (NumberFormatException _e) {
@@ -198,6 +183,7 @@ public class Servidor
                     + "servidor. Dados podem ter sido perdidos!");
         }
 
+        // Antes de fechar escreve os dados no disco
         try {
             Servidor.pegaServidor().escreveDados();
         } catch (IOException e) {
