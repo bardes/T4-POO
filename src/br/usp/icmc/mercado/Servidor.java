@@ -50,10 +50,17 @@ public class Servidor
 
     public void roda(int porta) throws InterruptedException
     {
+        try {
+            ss = new ServerSocket(porta);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+
         // Cria um executor pra cuidar dos manipuladores
         ExecutorService executor = Executors.newCachedThreadPool();
 
-        while(true) {
+        while(!ss.isClosed()) {
             // Espera uma conexão ou sai se o socket fechar
             Socket s = null;
             try {
@@ -61,7 +68,7 @@ public class Servidor
             } catch (IOException e) {
                 if(!ss.isClosed())
                     e.printStackTrace();
-                break;
+                continue;
             }
 
             // Passa o Soket para uma thread lidar com a conexão
