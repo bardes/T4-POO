@@ -193,7 +193,7 @@ Realiza a compra de um produto.
 **Requisição:**
 ```
 BUY
-prod:sabre-de-luz
+name:sabre-de-luz
 id:nome_de_exemplo
 token:ExEmPlOeXeMpLoExEmPlO+==
 
