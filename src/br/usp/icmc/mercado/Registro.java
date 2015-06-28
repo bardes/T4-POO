@@ -54,6 +54,9 @@ public interface Registro
     }
 
 
+    /**
+     * Carrega uma sequencia de registros no formato CSV.
+     */
     static void
     carregaRegistros (Reader fonte, LinkedHashMap<String, Registro> regs)
     throws FileNotFoundException, IOException

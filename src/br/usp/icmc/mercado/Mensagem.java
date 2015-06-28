@@ -61,7 +61,7 @@ public class Mensagem
         return msg;
     }
 
-    public void escreve(Writer saida)
+    public void escreve(Writer saida) throws IOException
     {
         saida.write(comando + "\n");
         for(Map.Entry<String, String> e : variaveis.entrySet())

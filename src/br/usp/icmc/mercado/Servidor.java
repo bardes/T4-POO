@@ -1,5 +1,6 @@
 package br.usp.icmc.mercado;
 import java.io.*;
+import java.net.*;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -17,6 +18,100 @@ public class Servidor
     //! Instância do singleton dessa classe
     private static final Servidor singleton = new Servidor();
 
+    private Map<String, String> usuarios;
+    private Map<String, String> produtos;
+    
+    private String estado;
+    private ServerSocket ss;
+
+    private Servidor()
+    {
+        if(singleton != null)
+            throw new IllegalStateException("Singleton violado!");
+    
+        try {
+            carregaDados();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String pegaEstado()
+    {
+        return estado;
+    }
+
+    /**
+     * Carrega todos os dados do disco
+     */
+    public void carregaDados() throws IOException
+    {
+    }
+
+    /**
+     * Escreve todos os dados no disco.
+     */
+    public void escreveDados() throws IOException
+    {
+    }
+
+    public void roda(int porta) throws InterruptedException
+    {
+
+        // Cria um manipulador de threads.
+        ExecutorService executor = Executors.newFixedThreadPool(
+                Runtime.getRuntime().availableProcessors());
+
+        estado = "RODANDO";
+        while(estado.equals("RODANDO")) {
+            // Espera uma conexão ou sai se o socket fechar
+            Socket s = null;
+            try {
+                s = ss.accept();
+            } catch (IOException e) {
+                e.printStackTrace();
+                break;
+            } catch (Exception e) {
+                e.printStackTrace();
+                continue;
+            }
+
+            // Passa o Soket para uma thread lidar com a conexão
+            executor.execute(new Manipulador(s));
+        }
+
+        // Espera 30s antes de fechar pra dar tempo de terminar todas as
+        // requisições em aberto.
+        if(!executor.awaitTermination(30, TimeUnit.SECONDS)) {
+            System.err.println("AVISO: Não conseguiu fechar todas as "
+                               + "conexões antes de sair!");
+        }
+    }
+
+    /**
+     * Para o servidor "graciosamente".
+     */
+    public void para()
+    {
+        if(!estado.equals("RODANDO"))
+            return;
+
+        estado = "PARA";
+        try {
+            ss.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Pega o singleton do servidor.
+     */
+    static public Servidor pegaServidor()
+    {
+        return singleton;
+    }
+
     /**
      * Tenta fazer login do usuário especificado.
      */
@@ -26,21 +121,14 @@ public class Servidor
     }
 
     /**
-     * Verifica se o token dado é válido para esse usuário.
-     */
-    public boolean validaToken(String id, String token)
-    {
-        return false;
-    }
-
-    /**
      * Tenta fazer logut do usuário especificado.
      *
      * Se o usuário exixtir e o token for válido será realizado logut.
      * Caso contrário nada acontece.
      */
-    public void logout(String id, String token)
+    public Mensagem logout(String id, String token)
     {
+        return null;
     }
 
     /**
@@ -90,22 +178,6 @@ public class Servidor
         return null;
     }
 
-    /**
-     * Pega o singleton do servidor.
-     */
-    static public Servidor pegaServidor()
-    {
-        return singleton;
-    }
-
-    private Servidor()
-    {
-        if(singleton != null)
-            throw new IllegalStateException("Singleton violado!");
-
-
-    }
-
     public static void main(String[] args) {
         // Checa os argumentos
         if(args.length != 1) {
@@ -115,47 +187,21 @@ public class Servidor
 
         // Tenta criar o ServerSocket
         int porta;
-        ServerSocket ss;
+        ServerSocket ss = null;
         try {
-            porta = Integer.parseInt(args[0]);
-            ss = new ServerSocket();
+            Servidor.pegaServidor().roda(Integer.parseInt(args[0]));
         } catch (NumberFormatException _e) {
             System.out.println("A porta especificada tem que ser um número!");
             System.exit(2);
+        } catch (InterruptedException _e) {
+            System.err.println("AVISO: Interrompido durante a terminação do "
+                    + "servidor. Dados podem ter sido perdidos!");
+        }
+
+        try {
+            Servidor.pegaServidor().escreveDados();
         } catch (IOException e) {
-            System.out.println("Não conseguiu criar o servidor.");
-            System.out.println(e);
-            System.exit(2);
+            e.printStackTrace();
         }
-
-        // Cria um manipulador de threads.
-        ExecutorService executor = Executors.newFixedThreadPool(
-                Runtime.getRuntime().availableProcessors());
-        do {
-            // Espera uma conexão ou sai se o socket fechar
-            Socket s;
-            try {
-                s = ss.accept();
-            } catch (IOException e) {
-                if(s.isClosed()) {
-                    break;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            // Passa o Soket para uma thread lidar com a conexão
-            executor.execute(new Manipulador(s));
-
-        } while(true);
-
-        // Fecha as conexões em aberto
-        executor.shutDownNow();
-        if(!executor.awaitTermination(10, TimeUnit.SECONDS)) {
-            System.err.println("AVISO: Não conseguiu fechar todas as conexões"
-                    + " antes de sair!");
-        }
-
-        // Fecha o servidor
     }
 }

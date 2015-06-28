@@ -1,4 +1,5 @@
-package br.usp.icmc.smercado;
+package br.usp.icmc.mercado;
+import java.net.*;
 
 /**
  * Classe responsável por lidar com as conexões de cada cliente.
@@ -9,4 +10,7 @@ package br.usp.icmc.smercado;
  */
 class Manipulador extends Thread
 {
+    public Manipulador(Socket s)
+    {
+    }
 }
