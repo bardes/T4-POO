@@ -112,6 +112,8 @@ price:1999.95
 exp-date:9999999999
 supplier:the-empire
 stock:42
+id:nome_de_exemplo
+token:ExEmPlOeXeMpLoExEmPlO+==
 
 ```
 
@@ -138,6 +140,8 @@ Aumenta a quantidade em estoque de um produto já existente.
 STOCK_PRODUCT
 name:sabre-de-luz
 add:9001
+id:nome_de_exemplo
+token:ExEmPlOeXeMpLoExEmPlO+==
 
 ```
 
@@ -165,6 +169,8 @@ Lista os produtos do super mercado. Há 3 filtros disponíveis: `ALL`, `AVAILABL
 ```
 PRODUCT_LIST
 filter:ALL
+id:nome_de_exemplo
+token:ExEmPlOeXeMpLoExEmPlO+==
 
 ```
 
@@ -188,6 +194,8 @@ Realiza a compra de um produto.
 ```
 BUY
 prod:sabre-de-luz
+id:nome_de_exemplo
+token:ExEmPlOeXeMpLoExEmPlO+==
 
 ```
 
