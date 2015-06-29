@@ -32,6 +32,13 @@ public class Mensagem
         return err;
     }
 
+    public static Mensagem OK()
+    {
+        Mensagem ok = new Mensagem();
+        ok.comando = "OK";
+        return ok;
+    }
+
     /**
      * Lê o buffer até atingir uma linha vazia ou um erro.
      */

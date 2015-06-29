@@ -23,6 +23,16 @@ public class Usuario implements Registro
     private String tel;
     private String token;
 
+    String pegaId() {return id;}
+    String pegaNome() {return nome;}
+    String pegaDigesto() {return digesto;}
+    String pegaSal() {return sal;}
+    String pegaEnd1() {return end1;}
+    String pegaEnd2() {return end2;}
+    String pegaEmail() {return email;}
+    String pegaTel() {return tel;}
+    String pegaToken() {return token;}
+
     /**
      * Cria um usuário vazio.
      */

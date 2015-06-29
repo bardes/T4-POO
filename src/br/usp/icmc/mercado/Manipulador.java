@@ -53,7 +53,8 @@ class Manipulador implements Runnable
                 try {
                     Mensagem.ERRO("Requisição inválida!").escreve(saida);
                 } catch (SocketException e) { // Cliente desconectou
-                    System.err.println("INFO: Cliente desconectado.");
+                    System.err.println("INFO: Cliente desconectou "
+                            + "sem dar tchau :(");
                     break;
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -62,6 +63,9 @@ class Manipulador implements Runnable
             } else {
                 try {
                     avaliaMensagem(m); // Tenta rodar o comando recebido
+                } catch (SocketException _e) {
+                    System.err.println("AVISO: Cliente desconectou sem "
+                            + "receber a resposta!");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -76,6 +80,7 @@ class Manipulador implements Runnable
             case "LOGIN":
                 if(verificaVar(m, "id")) break;
                 if(verificaVar(m, "pass")) break;
+
                 serv.login(m.variaveis.get("id"),
                            m.variaveis.get("pass")).escreve(saida);
                 break;

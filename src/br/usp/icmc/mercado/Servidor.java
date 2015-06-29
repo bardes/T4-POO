@@ -14,13 +14,16 @@ import java.util.concurrent.*;
 
 public class Servidor
 {
-    private Map<String, String> usuarios;
-    private Map<String, String> produtos;
+    private Map<String, Usuario> usuarios;
+    private Map<String, Produto> produtos;
     private ServerSocket ss;
 
     //TODO Especificar um caminho para os dados
     public Servidor()
     {
+        usuarios = new HashMap<String, Usuario>();
+        produtos = new HashMap<String, Produto>();
+
         // Tenta carregar os dados antes de criar o servidor.
         try {
             carregaDados();
@@ -75,7 +78,7 @@ public class Servidor
             }
 
             // Passa o Soket para uma thread lidar com a conexão
-            executor.submit(new Manipulador(s, this));
+            executor.execute(new Manipulador(s, this));
         }
 
         // Espera todos os manipuladores terminarem
@@ -101,12 +104,18 @@ public class Servidor
      */
     public Mensagem login(String id, String senha)
     {
-        Mensagem resp = new Mensagem();
-        if(!usuarios.containsKey(id)) {
-            resp.comando = "ERROR";
-            resp.variaveis.put("msg", "");
-        }
-        return null;
+        if(!usuarios.containsKey(id))
+            return Mensagem.ERRO("Usuário e/ou senha inválidos.");
+
+        String tok = usuarios.get(id).login(senha);
+
+        if(tok == null)
+            return Mensagem.ERRO("Usuário e/ou senha inválidos.");
+        
+        Mensagem m = new Mensagem();
+        m.comando = "OK";
+        m.variaveis.put("token", tok);
+        return m;
     }
 
     /**
@@ -117,7 +126,14 @@ public class Servidor
      */
     public Mensagem logout(String id, String token)
     {
-        return null;
+        if(!usuarios.containsKey(id))
+            return Mensagem.ERRO("Usuário e/ou token inválidos.");
+
+        if(!usuarios.get(id).validaToken(token))
+            return Mensagem.ERRO("Usuário e/ou token inválidos.");
+
+        usuarios.get(id).logout();
+        return Mensagem.OK();
     }
 
     /**
@@ -125,7 +141,11 @@ public class Servidor
      */
     public Mensagem adicionaUsuario(Usuario u)
     {
-        return null;
+        if(usuarios.containsKey(u.pegaId()))
+            return Mensagem.ERRO("Usuário já existe!");
+
+        usuarios.put(u.pegaId(), u);
+        return Mensagem.OK();
     }
 
     /**
