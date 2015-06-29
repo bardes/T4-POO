@@ -64,9 +64,16 @@ token:ExEmPlOeXeMpLoExEmPlO+==
 
 **Resposta:**
 
-A resposta de um LOGOUT é sempre OK, mesmo que o token não exista ou já tenha feito logout.
+Sucesso:
 ```
 OK
+
+```
+
+Falhou:
+```
+ERRO
+msg:Usuário e/ou token inválidos.
 
 ```
 
