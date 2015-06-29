@@ -118,7 +118,7 @@ Note que o preço e a data devem ser números inteiros. A data é um unix timest
 ADD_PRODUCT
 name:sabre-de-luz
 price:199995
-exp-date:9999999999
+exp_date:9999999999
 supplier:the-empire
 stock:42
 id:nome_de_exemplo
