@@ -7,26 +7,21 @@ import java.util.concurrent.*;
 /**
  * Classe responsável por receber as conexões e lidar com o banco de dados.
  * 
- * O servidor é uma classe SINGLETON, assim todas as threads que estão lidando
- * com os possíveis vários clientes lidam sempre com o mesmo servidor. Além
- * disso operações que devem ser sincronizadas podem usar a trava do server,
- * que garante que apenas uma thread faça operações críticas por vez.
+ * É responsabilidade do servidor manter as operações sincronizadas através
+ * do uso de travas, que garante que apenas uma thread faça operações críticas
+ * por vez.
  */
 
 public class Servidor
 {
-    //! Instância do singleton dessa classe
-    private static final Servidor singleton = new Servidor();
-
     private Map<String, String> usuarios;
     private Map<String, String> produtos;
     private ServerSocket ss;
 
-    private Servidor()
+    //TODO Especificar um caminho para os dados
+    public Servidor()
     {
-        if(singleton != null)
-            throw new IllegalStateException("Singleton violado!");
-    
+        // Tenta carregar os dados antes de criar o servidor.
         try {
             carregaDados();
         } catch (IOException e) {
@@ -48,6 +43,11 @@ public class Servidor
     {
     }
 
+    /**
+     * Executa o processo do servidor.
+     *
+     * Essa função só retorna quando alguém chama o método para().
+     */
     public void roda(int porta) throws InterruptedException
     {
         try {
@@ -66,24 +66,22 @@ public class Servidor
             try {
                 s = ss.accept();
             } catch (IOException e) {
-                if(!ss.isClosed())
+                if(ss.isClosed()) { // Servidor deve parar
+                    break;
+                } else { // Foi uma falha de IO
                     e.printStackTrace();
-                continue;
+                    continue;
+                }
             }
 
             // Passa o Soket para uma thread lidar com a conexão
-            executor.execute(new Manipulador(s));
+            executor.submit(new Manipulador(s, this));
         }
 
-        // Interrompe todas as threads
-        executor.shutdownNow();
-
-        // Espera até 30s antes de fechar pra dar tempo de terminar todas as
-        // requisições em aberto.
-        if(!executor.awaitTermination(30, TimeUnit.SECONDS)) {
-            System.err.println("AVISO: Não conseguiu fechar todas as "
-                               + "conexões antes de sair!");
-        }
+        // Espera todos os manipuladores terminarem
+        System.out.println("AVISO: Aguardando todos os clientes sairem " +
+                           "antes de fechar.");
+        executor.shutdown();
     }
 
     /**
@@ -99,18 +97,15 @@ public class Servidor
     }
 
     /**
-     * Pega o singleton do servidor.
-     */
-    static public Servidor pegaServidor()
-    {
-        return singleton;
-    }
-
-    /**
      * Tenta fazer login do usuário especificado.
      */
     public Mensagem login(String id, String senha)
     {
+        Mensagem resp = new Mensagem();
+        if(!usuarios.containsKey(id)) {
+            resp.comando = "ERROR";
+            resp.variaveis.put("msg", "");
+        }
         return null;
     }
 
@@ -159,7 +154,7 @@ public class Servidor
      * "AVAILABlE" ou "UNAVAILABLE"
      * @param dest Lista onde os produtos devem ser adicionados.
      */
-    public Mensagem listaProdutos(String filtro, List<Produto> dest)
+    public Mensagem listaProdutos(String filtro)
     {
         return null;
     }
@@ -179,9 +174,10 @@ public class Servidor
             System.exit(1);
         }
 
-        // Tenta rodar o Server
+        // Tenta rodar o Servidor
+        Servidor s = new Servidor();
         try {
-            Servidor.pegaServidor().roda(Integer.parseInt(args[0]));
+            s.roda(Integer.parseInt(args[0]));
         } catch (NumberFormatException _e) {
             System.out.println("A porta especificada tem que ser um número!");
             System.exit(2);
@@ -192,7 +188,7 @@ public class Servidor
 
         // Antes de fechar escreve os dados no disco
         try {
-            Servidor.pegaServidor().escreveDados();
+            s.escreveDados();
         } catch (IOException e) {
             e.printStackTrace();
         }

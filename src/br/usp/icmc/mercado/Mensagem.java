@@ -10,12 +10,31 @@ public class Mensagem
 {
     public String comando;
     public Map<String, String> variaveis;
+    public StringBuffer dados;
 
-    private Mensagem() {
+    /**
+     * Cria uma Mensagem nula.
+     */
+    public Mensagem() {
         comando = null;
         variaveis = new HashMap<String, String>();
+        dados = new StringBuffer();
     }
 
+    /**
+     * Cria uma Mensagem de erro com a descição dada.
+     */
+    public static Mensagem ERRO(String msg)
+    {
+        Mensagem err = new Mensagem();
+        err.comando = "ERROR";
+        err.variaveis.put("msg", msg);
+        return err;
+    }
+
+    /**
+     * Lê o buffer até atingir uma linha vazia ou um erro.
+     */
     private static void esvazia(BufferedReader entrada) throws IOException
     {
         String s;
@@ -23,6 +42,9 @@ public class Mensagem
             if(s.equals("")) return;
     }
 
+    /**
+     * Lê uma mensagem à partir da entrada dada.
+     */
     public static Mensagem le(BufferedReader entrada) throws IOException
     {
         Mensagem msg = new Mensagem();
@@ -61,12 +83,20 @@ public class Mensagem
         return msg;
     }
 
+    /**
+     * Escreve uma mensagem na saida dada.
+     */
     public void escreve(Writer saida) throws IOException
     {
         saida.write(comando + "\n");
         for(Map.Entry<String, String> e : variaveis.entrySet())
             saida.write(e.getKey() + ":" + e.getValue() + "\n");
         saida.write("\n");
+       
+        if(dados.length() > 0)
+            saida.append(dados);
+
+        saida.flush();
     }
 
     @Override
