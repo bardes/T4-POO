@@ -11,7 +11,7 @@ import java.io.*;
  * Registro de volta na memória os dados serão desempilhados em ordem
  * reversa à que foram adicionados.
  */
-public interface Registro
+interface Registro
 {
     /**
      * Gera uma pilha com os dados de um registro.
@@ -37,8 +37,8 @@ public interface Registro
     /**
      * Escreve uma sequencia de registros em formato CSV.
      */
-    static void
-    escreveRegistros(Appendable dest, Iterable<Registro> regs)
+    public static void
+    escreveRegistros(Appendable dest, Iterable<? extends Registro> regs)
     throws FileNotFoundException, IOException
     {
         // Abre o arquivo e cria um "printer" para manipular a saída
@@ -57,8 +57,9 @@ public interface Registro
     /**
      * Carrega uma sequencia de registros no formato CSV.
      */
-    static void
-    carregaRegistros (Reader fonte, LinkedHashMap<String, Registro> regs)
+/*
+    final public void
+    carregaRegistros(Reader fonte, LinkedHashMap<String, ?> regs)
     throws FileNotFoundException, IOException
     {
         // Cria um parser para ler o arquivo .csv
@@ -70,32 +71,18 @@ public interface Registro
         // Percorre cada registro no arquivo
         for(CSVRecord r : parser)
         {
-            // Tenta instanciar um ojeto do tipo lido no arquivo.
-            Object novoObj; 
-            try {
-                novoObj = Class.forName(r.get(0)).newInstance();
-            } catch (Exception e) {
-                System.err.println("Aviso: Ignorando registro inválido.");
-                e.printStackTrace();
-                continue;
-            }
-
-            if(novoObj instanceof Registro) {
-                Registro novo = (Registro) novoObj;
-                novo.carregaDados(empilhaCSVRecord(r));
-                regs.put(r.get(1), novo);
-            } else {
-                System.err.println("Aviso: Registro ignorado! " + novoObj + 
-                        " não implementa a interface Registro.");
-            }
+            novo = Class.forName(r.get(0)); 
+            reg.carregaDados(empilhaCSVRecord(r));
+            regs.put(r.get(1), reg);
         }
     }
 
-    static Stack<String> empilhaCSVRecord(CSVRecord r)
+    private static Stack<String> empilhaCSVRecord(CSVRecord r)
     {
         Stack<String> empilhado = new Stack<String>();
         for(String dado : r)
             empilhado.add(dado);
         return empilhado;
     }
+*/
 }

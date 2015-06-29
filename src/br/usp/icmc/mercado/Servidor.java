@@ -3,6 +3,7 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.util.concurrent.*;
+import org.apache.commons.csv.*;
 
 /**
  * Classe responsável por receber as conexões e lidar com o banco de dados.
@@ -14,22 +15,33 @@ import java.util.concurrent.*;
 
 public class Servidor
 {
-    private Map<String, Usuario> usuarios;
-    private Map<String, Produto> produtos;
+    private LinkedHashMap<String, Usuario> usuarios;
+    private LinkedHashMap<String, Produto> produtos;
     private ServerSocket ss;
 
     //TODO Especificar um caminho para os dados
     public Servidor()
     {
-        usuarios = new HashMap<String, Usuario>();
-        produtos = new HashMap<String, Produto>();
+        usuarios = new LinkedHashMap<String, Usuario>();
+        produtos = new LinkedHashMap<String, Produto>();
 
         // Tenta carregar os dados antes de criar o servidor.
         try {
             carregaDados();
+        } catch (FileNotFoundException _e) {
+            System.err.println("AVISO: Nenhum arquivo de dados encontrado. "
+                    + "Criando banco de dados vazio.");
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static Stack<String> empilhaCSVRecord(CSVRecord r)
+    {
+        Stack<String> empilhado = new Stack<String>();
+        for(String dado : r)
+            empilhado.add(dado);
+        return empilhado;
     }
 
     /**
@@ -37,6 +49,34 @@ public class Servidor
      */
     public void carregaDados() throws IOException
     {
+        // Abrindo o arquivo
+        CSVParser parser = CSVFormat.RFC4180.parse(
+                           new FileReader("usuarios.csv"));
+
+        // Esvazia os usuarios atuais
+        usuarios.clear();
+
+        // Percorre cada registro no arquivo
+        for(CSVRecord r : parser)
+        {
+            Usuario novo = new Usuario();
+            novo.carregaDados(empilhaCSVRecord(r));
+            usuarios.put(r.get(1), novo);
+        }
+
+        // Abrindo o arquivo
+        parser = CSVFormat.RFC4180.parse(new FileReader("produtos.csv"));
+
+        // Esvazia os produtos atuais
+        produtos.clear();
+
+        // Percorre cada registro no arquivo
+        for(CSVRecord r : parser)
+        {
+            Produto novo = new Produto();
+            novo.carregaDados(empilhaCSVRecord(r));
+            produtos.put(r.get(1), novo);
+        }
     }
 
     /**
@@ -44,6 +84,10 @@ public class Servidor
      */
     public void escreveDados() throws IOException
     {
+        Registro.escreveRegistros(new FileWriter("produtos.csv"),
+                produtos.values());
+        Registro.escreveRegistros(new FileWriter("usuarios.csv"),
+                usuarios.values());
     }
 
     /**
@@ -153,7 +197,11 @@ public class Servidor
      */
     public Mensagem adicionaProduto(Produto p)
     {
-        return null;
+        if(produtos.containsKey(p.pegaNome()))
+            return Mensagem.ERRO("Produto já cadastrado!");
+
+        produtos.put(p.pegaNome(), p);
+        return Mensagem.OK();
     }
 
     /**

@@ -110,9 +110,16 @@ class Manipulador implements Runnable
                 if(verificaVar(m, "name")) break;
                 if(verificaVar(m, "price")) break;
                 if(verificaVar(m, "supplier")) break;
-                if(verificaVar(m, "exp-date")) break;
+                if(verificaVar(m, "exp_date")) break;
                 if(verificaVar(m, "stock")) break;
-                Mensagem.ERRO("NÃO IMPLEMENTADO!!!").escreve(saida);
+                
+                Produto p = new Produto(m.variaveis.get("name"),
+                                        m.variaveis.get("supplier"),
+                                        m.variaveis.get("price"),
+                                        m.variaveis.get("stock"),
+                                        m.variaveis.get("exp_date"));
+
+                serv.adicionaProduto(p).escreve(saida);
                 break;
 
             case "STOCK_PRODUCT":
