@@ -112,10 +112,12 @@ msg:ID já está cadastrado!
 Adiciona um produto novo no estoque.
 
 **Requisição:**
+
+Note que o preço e a data devem ser números inteiros. A data é um unix timestamp e o preço é medido em centavos.
 ```
 ADD_PRODUCT
 name:sabre-de-luz
-price:1999.95
+price:199995
 exp-date:9999999999
 supplier:the-empire
 stock:42
