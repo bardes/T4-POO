@@ -204,11 +204,13 @@ public class Servidor
      */
     public Mensagem adicionaUsuario(Usuario u)
     {
-        if(usuarios.containsKey(u.pegaId()))
-            return Mensagem.ERRO("Usuário já existe!");
+        synchronized(usuarios) {
+            if(usuarios.containsKey(u.pegaId()))
+                return Mensagem.ERRO("Usuário já existe!");
 
-        usuarios.put(u.pegaId(), u);
-        return Mensagem.OK();
+            usuarios.put(u.pegaId(), u);
+            return Mensagem.OK();
+        }
     }
 
     /**
@@ -216,11 +218,13 @@ public class Servidor
      */
     public Mensagem adicionaProduto(Produto p)
     {
-        if(produtos.containsKey(p.pegaNome()))
-            return Mensagem.ERRO("Produto já cadastrado!");
+        synchronized(produtos) {
+            if(produtos.containsKey(p.pegaNome()))
+                return Mensagem.ERRO("Produto já cadastrado!");
 
-        produtos.put(p.pegaNome(), p);
-        return Mensagem.OK();
+            produtos.put(p.pegaNome(), p);
+            return Mensagem.OK();
+        }
     }
 
     /**
@@ -231,14 +235,16 @@ public class Servidor
      */
     public Mensagem estocaProduto(String nome, long qtd)
     {
-        // Checa se existe
-        if(!produtos.containsKey(nome))
-            return Mensagem.ERRO("Produto inexistente!");
+        synchronized(produtos) {
+            // Checa se existe
+            if(!produtos.containsKey(nome))
+                return Mensagem.ERRO("Produto inexistente!");
 
-        Mensagem m = new Mensagem("STOCK");
-        m.variaveis.put("count",
-                        Long.toString(produtos.get(nome).estoca(qtd)));
-        return m;
+            Mensagem m = new Mensagem("STOCK");
+            m.variaveis.put("count",
+                    Long.toString(produtos.get(nome).estoca(qtd)));
+            return m;
+        }
     }
 
     /**
@@ -279,15 +285,17 @@ public class Servidor
      */
     public Mensagem compraProduto(String prod)
     {
-        // Checa se existe
-        if(!produtos.containsKey(prod))
-            return Mensagem.ERRO("Produto inexistente!");
+        synchronized(produtos) {
+            // Checa se existe
+            if(!produtos.containsKey(prod))
+                return Mensagem.ERRO("Produto inexistente!");
 
-        // Tenta reduzir a qtd em estoque
-        if(produtos.get(prod).reduzEstoque())
-            return Mensagem.OK();
-        else
-            return Mensagem.ERRO("Produto exgotado!");
+            // Tenta reduzir a qtd em estoque
+            if(produtos.get(prod).reduzEstoque())
+                return Mensagem.OK();
+            else
+                return Mensagem.ERRO("Produto exgotado!");
+        }
     }
 
     public static void main(String[] args) {
