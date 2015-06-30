@@ -16,11 +16,11 @@ public class Produto implements Registro
     long pegaPreco() {return preco;}
     long pegaValidade() {return validade;}
 
-    public void estoca(long qtd)
+    public long estoca(long qtd)
     {
         estoque += qtd;
         // Impede quantidaes negativas
-        estoque = estoque < 0 ? 0 : estoque;
+        return estoque = estoque < 0 ? 0 : estoque;
     }
 
     public boolean reduzEstoque()

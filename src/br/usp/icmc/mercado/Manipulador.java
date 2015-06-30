@@ -146,7 +146,8 @@ class Manipulador implements Runnable
 
                 if(verificaLogin(m.variaveis.get("id"),
                                  m.variaveis.get("token"))) break;
-                Mensagem.ERRO("NÃO IMPLEMENTADO!!!").escreve(saida);
+
+                serv.listaProdutos(m.variaveis.get("filter")).escreve(saida);
                 break;
 
             case "BUY":

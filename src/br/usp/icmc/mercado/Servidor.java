@@ -2,6 +2,7 @@ package br.usp.icmc.mercado;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.stream.*;
 import java.util.concurrent.*;
 import org.apache.commons.csv.*;
 
@@ -26,14 +27,7 @@ public class Servidor
         produtos = new LinkedHashMap<String, Produto>();
 
         // Tenta carregar os dados antes de criar o servidor.
-        try {
-            carregaDados();
-        } catch (FileNotFoundException _e) {
-            System.err.println("AVISO: Nenhum arquivo de dados encontrado. "
-                    + "Criando banco de dados vazio.");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        carregaDados();
     }
 
     private static Stack<String> empilhaCSVRecord(CSVRecord r)
@@ -47,35 +41,50 @@ public class Servidor
     /**
      * Carrega todos os dados do disco
      */
-    public void carregaDados() throws IOException
+    public void carregaDados()
     {
-        // Abrindo o arquivo
-        CSVParser parser = CSVFormat.RFC4180.parse(
-                           new FileReader("usuarios.csv"));
+        try {
+            // Abrindo o arquivo
+            CSVParser parser = CSVFormat.RFC4180.parse(
+                    new FileReader("usuarios.csv"));
 
-        // Esvazia os usuarios atuais
-        usuarios.clear();
+            // Esvazia os usuarios atuais
+            usuarios.clear();
 
-        // Percorre cada registro no arquivo
-        for(CSVRecord r : parser)
-        {
-            Usuario novo = new Usuario();
-            novo.carregaDados(empilhaCSVRecord(r));
-            usuarios.put(r.get(0), novo);
+            // Percorre cada registro no arquivo
+            for(CSVRecord r : parser)
+            {
+                Usuario novo = new Usuario();
+                novo.carregaDados(empilhaCSVRecord(r));
+                usuarios.put(r.get(0), novo);
+            }
+        } catch (FileNotFoundException _e) {
+            System.err.println("AVISO: Não achou usuarios.csv."
+                    + " Criando vazio...");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
-        // Abrindo o arquivo
-        parser = CSVFormat.RFC4180.parse(new FileReader("produtos.csv"));
+        try {
+            // Abrindo o arquivo
+            CSVParser parser = CSVFormat.RFC4180.parse(
+                    new FileReader("produtos.csv"));
 
-        // Esvazia os produtos atuais
-        produtos.clear();
+            // Esvazia os produtos atuais
+            produtos.clear();
 
-        // Percorre cada registro no arquivo
-        for(CSVRecord r : parser)
-        {
-            Produto novo = new Produto();
-            novo.carregaDados(empilhaCSVRecord(r));
-            produtos.put(r.get(0), novo);
+            // Percorre cada registro no arquivo
+            for(CSVRecord r : parser)
+            {
+                Produto novo = new Produto();
+                novo.carregaDados(empilhaCSVRecord(r));
+                produtos.put(r.get(0), novo);
+            }
+        } catch (FileNotFoundException _e) {
+            System.err.println("AVISO: Não achou produtos.csv. "
+                    + "Criando vazio...");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -226,9 +235,10 @@ public class Servidor
         if(!produtos.containsKey(nome))
             return Mensagem.ERRO("Produto inexistente!");
 
-        produtos.get(nome).estoca(qtd);
         Mensagem m = new Mensagem("STOCK");
-        return null;
+        m.variaveis.put("count",
+                        Long.toString(produtos.get(nome).estoca(qtd)));
+        return m;
     }
 
     /**
@@ -238,9 +248,30 @@ public class Servidor
      * "AVAILABlE" ou "UNAVAILABLE"
      * @param dest Lista onde os produtos devem ser adicionados.
      */
-    public Mensagem listaProdutos(String filtro)
+    public Mensagem listaProdutos(String filtro) throws IOException
     {
-        return null;
+        Stream<Produto> s = produtos.values().stream();
+        switch(filtro) {
+            case "AVAILABLE":
+                s = s.filter(p -> p.pegaEstoque() > 0);
+                break;
+
+            case "UNAVAILABLE":
+                s = s.filter(p -> p.pegaEstoque() == 0);
+                break;
+
+            case "ALL":
+                break;
+
+            default:
+                return Mensagem.ERRO("Filtro inválido!");
+        }
+
+        List<Produto> l = s.collect(Collectors.toList());
+        Mensagem resposta = new Mensagem("PRODUCT_LIST");
+        Registro.escreveRegistros(resposta.dados, l);
+        resposta.variaveis.put("count", Integer.toString(l.size()));
+        return resposta;
     }
 
     /**

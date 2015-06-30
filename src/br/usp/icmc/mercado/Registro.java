@@ -39,7 +39,7 @@ interface Registro
      */
     public static void
     escreveRegistros(Appendable dest, Iterable<? extends Registro> regs)
-    throws FileNotFoundException, IOException
+    throws IOException
     {
         // Abre o arquivo e cria um "printer" para manipular a saída
         CSVPrinter saida = new CSVPrinter(dest, CSVFormat.RFC4180);
