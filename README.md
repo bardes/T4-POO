@@ -1,6 +1,11 @@
 #Super Mercado
 
 ## Execução
+`java -jar T4.jar <porta>` Inicia o servidor na porta escolhida e salva os dados no diretório atual quando o servidor terminar.
+
+Para comunicar com o servidor via texto pode-se usar `telnet`, `netcat` e equivalentes.
+
+Interface gráfica?
 
 ## Compilação
 Para compilar basta usar o comando `ant`.
@@ -223,3 +228,18 @@ ERROR
 msg:<Motivo>
 
 ```
+
+## Comandos Especiais (sem respostas)
+
+
+```
+BYE
+
+```
+Fecha a conexão com o servidor.
+
+```
+STOP
+
+```
+Faz o servidor parar de aceitar novas conexões e fechar assim que o último cliente sair.
