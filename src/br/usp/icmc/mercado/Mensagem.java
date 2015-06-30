@@ -21,6 +21,12 @@ public class Mensagem
         dados = new StringBuffer();
     }
 
+    public Mensagem(String cmd)
+    {
+        this();
+        comando = cmd;
+    }
+
     /**
      * Cria uma Mensagem de erro com a descição dada.
      */

@@ -144,6 +144,16 @@ public class Servidor
     }
 
     /**
+     * Verifica se um par (usuario, token) é válido.
+     */
+    public boolean autentica(String id, String token) {
+        if(!usuarios.containsKey(id))
+            return false;
+        else
+            return usuarios.get(id).validaToken(token);
+    }
+
+    /**
      * Tenta fazer login do usuário especificado.
      */
     public Mensagem login(String id, String senha)
@@ -210,8 +220,14 @@ public class Servidor
      * Essa função só pode ser usada para *aumentar* a quantidade disponível
      * de algum produto. Se um número negativo for passado nada acontece.
      */
-    public Mensagem estocaProduto(String nome)
+    public Mensagem estocaProduto(String nome, long qtd)
     {
+        // Checa se existe
+        if(!produtos.containsKey(nome))
+            return Mensagem.ERRO("Produto inexistente!");
+
+        produtos.get(nome).estoca(qtd);
+        Mensagem m = new Mensagem("STOCK");
         return null;
     }
 
@@ -230,9 +246,17 @@ public class Servidor
     /**
      * Tenta realizar a compra de um produto.
      */
-    public Mensagem compraProduto(String id, String token, String prod)
+    public Mensagem compraProduto(String prod)
     {
-        return null;
+        // Checa se existe
+        if(!produtos.containsKey(prod))
+            return Mensagem.ERRO("Produto inexistente!");
+
+        // Tenta reduzir a qtd em estoque
+        if(produtos.get(prod).reduzEstoque())
+            return Mensagem.OK();
+        else
+            return Mensagem.ERRO("Produto exgotado!");
     }
 
     public static void main(String[] args) {

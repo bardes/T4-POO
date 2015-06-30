@@ -16,10 +16,26 @@ public class Produto implements Registro
     long pegaPreco() {return preco;}
     long pegaValidade() {return validade;}
 
+    public void estoca(long qtd)
+    {
+        estoque += qtd;
+        // Impede quantidaes negativas
+        estoque = estoque < 0 ? 0 : estoque;
+    }
+
+    public boolean reduzEstoque()
+    {
+        if(estoque <= 0)
+            return false;
+
+        estoque -= 1;
+        return true;
+    }
+
     public Produto() {}
 
     public Produto(String nome, String fornecedor, String preco,
-                   String estoque, String validade)
+            String estoque, String validade)
     {
         this.nome = nome;
         this.fornecedor = fornecedor;

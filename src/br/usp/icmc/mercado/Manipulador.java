@@ -89,7 +89,7 @@ class Manipulador implements Runnable
                 if(verificaVar(m, "id")) break;
                 if(verificaVar(m, "token")) break;
                 serv.logout(m.variaveis.get("id"),
-                            m.variaveis.get("Token")).escreve(saida);
+                            m.variaveis.get("token")).escreve(saida);
                 break;
 
             case "ADD_USER":
@@ -112,6 +112,9 @@ class Manipulador implements Runnable
                 if(verificaVar(m, "supplier")) break;
                 if(verificaVar(m, "exp_date")) break;
                 if(verificaVar(m, "stock")) break;
+
+                if(verificaLogin(m.variaveis.get("id"),
+                                 m.variaveis.get("token"))) break;
                 
                 Produto p = new Produto(m.variaveis.get("name"),
                                         m.variaveis.get("supplier"),
@@ -127,13 +130,22 @@ class Manipulador implements Runnable
                 if(verificaVar(m, "token")) break;
                 if(verificaVar(m, "name")) break;
                 if(verificaVar(m, "add")) break;
-                Mensagem.ERRO("NÃO IMPLEMENTADO!!!").escreve(saida);
+
+                if(verificaLogin(m.variaveis.get("id"),
+                                 m.variaveis.get("token"))) break;
+
+                serv.estocaProduto(m.variaveis.get("name"),
+                                   Long.parseLong(m.variaveis.get("add")))
+                                   .escreve(saida);
                 break;
 
             case "PRODUCT_LIST":
                 if(verificaVar(m, "id")) break;
                 if(verificaVar(m, "token")) break;
                 if(verificaVar(m, "filter")) break;
+
+                if(verificaLogin(m.variaveis.get("id"),
+                                 m.variaveis.get("token"))) break;
                 Mensagem.ERRO("NÃO IMPLEMENTADO!!!").escreve(saida);
                 break;
 
@@ -141,7 +153,11 @@ class Manipulador implements Runnable
                 if(verificaVar(m, "id")) break;
                 if(verificaVar(m, "token")) break;
                 if(verificaVar(m, "name")) break;
-                Mensagem.ERRO("NÃO IMPLEMENTADO!!!").escreve(saida);
+
+                if(verificaLogin(m.variaveis.get("id"),
+                                 m.variaveis.get("token"))) break;
+
+                serv.compraProduto(m.variaveis.get("name")).escreve(saida);
                 break;
 
             case "BYE":
@@ -161,21 +177,26 @@ class Manipulador implements Runnable
         }
     }
 
+    private boolean verificaLogin(String usr, String tok) throws IOException
+    {
+        if(serv.autentica(usr, tok))
+            return false;
+
+        Mensagem.ERRO("Usuário e/ou token inválido.").escreve(saida);
+        return true;
+    }
+
     /**
      * Verifica se a variavel está presente e responde com um erro se não
      * estiver.
      */
-    private boolean verificaVar(Mensagem m, String var)
+    private boolean verificaVar(Mensagem m, String var) throws IOException
     {
         if(m.variaveis.containsKey(var)) {
             return false;
         } else {
-            try {
-                Mensagem.ERRO("Variável \"" + var
+            Mensagem.ERRO("Variável \"" + var
                         + "\" não foi encontrada.").escreve(saida);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
             return true;
         }
     }

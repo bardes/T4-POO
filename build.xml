@@ -1,4 +1,4 @@
-<project name="T3" basedir="." default="jar">
+<project name="T4" basedir="." default="jar">
     <property name="main-class"  value="br.usp.icmc.mercado.Servidor"/>
     <property name="author.name" value="Paulo Bardes et al."/>
 

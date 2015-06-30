@@ -113,7 +113,7 @@ public class Usuario implements Registro
         if(digere(senha, sal).equals(digesto)) {
             byte[] tok = new byte[16];
             rndGen.nextBytes(tok);
-            return Base64.encodeBase64String(tok);
+            return token = Base64.encodeBase64String(tok);
         }
 
         // Se não bateu retorna null
