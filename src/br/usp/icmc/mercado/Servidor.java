@@ -61,7 +61,7 @@ public class Servidor
         {
             Usuario novo = new Usuario();
             novo.carregaDados(empilhaCSVRecord(r));
-            usuarios.put(r.get(1), novo);
+            usuarios.put(r.get(0), novo);
         }
 
         // Abrindo o arquivo
@@ -75,7 +75,7 @@ public class Servidor
         {
             Produto novo = new Produto();
             novo.carregaDados(empilhaCSVRecord(r));
-            produtos.put(r.get(1), novo);
+            produtos.put(r.get(0), novo);
         }
     }
 

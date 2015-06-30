@@ -46,7 +46,7 @@ interface Registro
 
         // Escreve cada registro no arquivo
         for(Registro r : regs) {
-            saida.print(r.getClass().getName()); // Escreve o tipo do obj.
+//            saida.print(r.getClass().getName()); // Escreve o tipo do obj.
             saida.printRecord(r.pegaDados());    // Seguido pelos dados
         }
 
