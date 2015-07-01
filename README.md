@@ -10,6 +10,9 @@ Interface gráfica?
 ## Compilação
 Para compilar basta usar o comando `ant`.
 
+## Design Patterns
+O projeto segue o padrão de design MVC, onde as classes **Usuario** e **Produto** são *models* definidos pela interface **Registro**. A Classe **Servidor** é o *controller*, e a classe **Manipulador** é o *view*.  
+
 ## Protocolo
 O protocolo usado para comunicação entre servidor e cliente é parecido com cabeçalhos HTTP, porém mais simples:
 ```
