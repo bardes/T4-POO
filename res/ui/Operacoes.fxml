@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.cell.*?>
+<?import javafx.collections.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="t4.OperacoesController">
+   <children>
+      <Button fx:id="save" layoutX="45.0" layoutY="279.0" mnemonicParsing="false" onAction="#save" text="Salvar" />
+      <Label layoutX="410.0" layoutY="216.0" text="Senha " />
+      <Label layoutX="43.0" layoutY="216.0" text="E-mail" />
+      <Label layoutX="441.0" layoutY="155.0" text="ID" />
+      <Label layoutX="43.0" layoutY="159.0" text="Complemento" />
+      <Label layoutX="248.0" layoutY="155.0" text="Telefone" />
+      <Label layoutX="43.0" layoutY="101.0" text="Endereço" />
+      <Label layoutX="41.0" layoutY="39.0" text="Nome" />
+      <PasswordField fx:id="password" layoutX="410.0" layoutY="237.0" />
+      <TextField fx:id="email" layoutX="40.0" layoutY="237.0" prefHeight="25.0" prefWidth="350.0" />
+      <TextField fx:id="ID" layoutX="441.0" layoutY="177.0" prefHeight="25.0" prefWidth="140.0" />
+      <TextField fx:id="telefone" layoutX="248.0" layoutY="177.0" />
+      <TextField fx:id="comp" layoutX="41.0" layoutY="181.0" prefHeight="25.0" prefWidth="192.0" />
+      <TextField fx:id="End" layoutX="41.0" layoutY="122.0" prefHeight="25.0" prefWidth="540.0" />
+      <TextField fx:id="Nome" layoutX="41.0" layoutY="65.0" prefHeight="25.0" prefWidth="540.0" />
+   </children>
+</AnchorPane>
