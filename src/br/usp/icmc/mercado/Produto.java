@@ -1,66 +1,71 @@
 package br.usp.icmc.mercado;
-
+import javafx.beans.property.*;
 import java.util.*;
 
-public class Produto implements Registro
+public class Produto 
 {
-    String nome;
     String fornecedor;
-    long preco;
-    long estoque;
     long validade;
-
-    String pegaNome() {return nome;}
-    String pegaFornecedor() {return fornecedor;}
-    long pegaEstoque() {return estoque;}
-    long pegaPreco() {return preco;}
-    long pegaValidade() {return validade;}
-
-    public long estoca(long qtd)
+    private final SimpleStringProperty nome = new SimpleStringProperty("");
+    private final SimpleLongProperty preco = new SimpleLongProperty();
+    private final SimpleLongProperty estoque = new SimpleLongProperty();
+    private final SimpleLongProperty disponivel = new SimpleLongProperty();
+    
+    public Produto(){}
+        
+    public Produto(String nome, String fornecedor, String validade, long preco, long estoque, long disponivel)
     {
-        estoque += qtd;
-        // Impede quantidaes negativas
-        return estoque = estoque < 0 ? 0 : estoque;
-    }
-
-    public boolean reduzEstoque()
-    {
-        if(estoque <= 0)
-            return false;
-
-        estoque -= 1;
-        return true;
-    }
-
-    public Produto() {}
-
-    public Produto(String nome, String fornecedor, String preco,
-            String estoque, String validade)
-    {
-        this.nome = nome;
+        setNome(nome);
+        setPreco(preco);
+        setEstoque(estoque);
+        setDisponivel(disponivel);
         this.fornecedor = fornecedor;
-        this.preco = Long.parseLong(preco);
-        this.estoque = Long.parseLong(estoque);
         this.validade = Long.parseLong(validade);
     }
 
+    String getFornecedor() {return fornecedor;}
+    long getValidade() {return validade;}
+    public final String getNome(){return nome.get();}
+    public final long getPreco() {return preco.get();}
+    public final long getEstoque() {return estoque.get();}
+    public final long getDisponivel() {return disponivel.get();}
+    public final void setNome(String Nome) {nome.set(Nome);}
+    public final void setPreco(long Preco) {preco.set(Preco);}
+    public final void setEstoque(long Estoque) {estoque.set(Estoque);}
+    public final void setDisponivel(long Disponivel) {disponivel.set(Disponivel);}
+    
+    public long estoca(long qtd)
+    {
+        estoque.add(qtd);
+        return estoque.get();
+    }
+
+    public boolean reduzEstoque(long qtde)
+    {
+        if(estoque.get() <= 0)
+            return false;
+
+        estoque.subtract(qtde);
+        return true;
+    }
+    
     public void carregaDados(Stack<String> dados)
     {
         validade = Long.parseLong(dados.pop());
-        estoque = Long.parseLong(dados.pop());
-        preco = Long.parseLong(dados.pop());
+        estoque.set(Long.parseLong(dados.pop()));
+        preco.set(Long.parseLong(dados.pop()));
         fornecedor = dados.pop();
-        nome = dados.pop();
+        nome.set(dados.pop());
     }
 
     public Stack<String> pegaDados()
     {
-        Stack<String> s = new Stack<String>();
-        s.push(nome);
-        s.push(fornecedor);
-        s.push(Long.toString(preco));
-        s.push(Long.toString(estoque));
-        s.push(Long.toString(validade));
+        Stack<String> s = new Stack<>();
+        s.push(nome.get());
+        s.push(Long.toString(preco.get()));
+        s.push(Long.toString(estoque.get()));
         return s;
     }
+
+
 }
